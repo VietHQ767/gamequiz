@@ -1,23 +1,16 @@
 # Kết nối Frontend với Backend
 
-## Cấu hình Backend
+## Cấu hình hiện tại
 
-- Backend chạy tại **http://localhost:3000** (theo `.env` PORT=3000).
-- Frontend (Vite) chạy tại **http://localhost:3001** và proxy `/api` → `http://localhost:3000`.
+| | URL |
+|--|-----|
+| **Backend (API)** | `https://bequiz.onrender.com` (Render) |
+| **Frontend** | `https://gamequiz-liard.vercel.app` (Vercel) |
 
-## CORS
+- **FE `.env`:** `VITE_API_URL=https://bequiz.onrender.com/api` → `src/api/client.ts` dùng biến này làm base URL.
+- **BE CORS:** Backend set `CLIENT_URL=https://gamequiz-liard.vercel.app` để cho phép request từ FE.
 
-Nếu bạn chạy FE và BE tách biệt (không dùng proxy), backend cần cho phép origin của FE. Trong `app.js` của BE, thêm vào `allowedOrigins`:
-
-```js
-"http://localhost:3001"
-```
-
-Hoặc trong `.env` của BE:
-
-```
-CLIENT_URL=http://localhost:3001
-```
+**Chạy local:** Giữ `VITE_API_URL` trong `.env` = gọi thẳng Render. Để dùng BE local, xóa/comment `VITE_API_URL` → FE dùng `/api` (proxy trong `vite.config.ts` tới localhost:3000).
 
 ## API mà FE đang gọi
 

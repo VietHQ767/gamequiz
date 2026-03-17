@@ -1,6 +1,7 @@
 import axios from 'axios'
 
-const API_BASE = '/api'
+/** Backend API URL: từ .env VITE_API_URL (vd. https://bequiz.onrender.com/api). Trống = dùng /api (proxy local). */
+const API_BASE = import.meta.env.VITE_API_URL ?? '/api'
 
 export const api = axios.create({
   baseURL: API_BASE,
