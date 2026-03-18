@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { Card } from 'react-bootstrap'
 
 export default function AdminHome() {
