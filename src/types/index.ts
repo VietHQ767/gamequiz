@@ -19,6 +19,7 @@ export interface Question {
 export interface Quiz {
   _id: string
   title?: string
+  description?: string
   questions: Question[]
 }
 

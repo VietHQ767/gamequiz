@@ -9,8 +9,10 @@ export default function ManageQuizzes() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [title, setTitle] = useState('')
+  const [description, setDescription] = useState('')
   const [editingQuiz, setEditingQuiz] = useState<Quiz | null>(null)
   const [editTitle, setEditTitle] = useState('')
+  const [editDescription, setEditDescription] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [showModal, setShowModal] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
@@ -26,7 +28,7 @@ export default function ManageQuizzes() {
         list.map(async (quiz) => {
           try {
             const full = await quizzesApi.getById(quiz._id)
-            return { ...quiz, questions: full.questions ?? [] }
+            return { ...full, questions: full.questions ?? [] }
           } catch {
             return { ...quiz, questions: [] }
           }
@@ -54,8 +56,9 @@ export default function ManageQuizzes() {
     setSubmitting(true)
     setError(null)
     try {
-      await quizzesApi.create({ title: title.trim() })
+      await quizzesApi.create({ title: title.trim(), description: description.trim() || undefined })
       setTitle('')
+      setDescription('')
       setShowModal(false)
       await loadQuizzes()
     } catch (e: unknown) {
@@ -69,6 +72,7 @@ export default function ManageQuizzes() {
   const openEdit = (quiz: Quiz) => {
     setEditingQuiz(quiz)
     setEditTitle(quiz.title ?? '')
+    setEditDescription(quiz.description ?? '')
     setShowEditModal(true)
   }
 
@@ -82,9 +86,13 @@ export default function ManageQuizzes() {
     setSubmitting(true)
     setError(null)
     try {
-      await quizzesApi.update(editingQuiz._id, { title: editTitle.trim() })
+      await quizzesApi.update(editingQuiz._id, {
+        title: editTitle.trim(),
+        description: editDescription.trim() || undefined,
+      })
       setShowEditModal(false)
       setEditingQuiz(null)
+      setEditDescription('')
       await loadQuizzes()
     } catch (e: unknown) {
       const err = e as { response?: { data?: { message?: string } } }
@@ -129,7 +137,7 @@ export default function ManageQuizzes() {
         </Modal.Header>
         <Form onSubmit={handleCreate}>
           <Modal.Body>
-            <Form.Group>
+            <Form.Group className="mb-3">
               <Form.Label>Quiz title</Form.Label>
               <Form.Control
                 type="text"
@@ -137,6 +145,16 @@ export default function ManageQuizzes() {
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="e.g. General Knowledge"
                 required
+              />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Description</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Mô tả ngắn về quiz (tùy chọn)"
               />
             </Form.Group>
           </Modal.Body>
@@ -152,13 +170,21 @@ export default function ManageQuizzes() {
       </Modal>
 
       {/* Edit Quiz Modal */}
-      <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
+      <Modal
+        show={showEditModal}
+        onHide={() => {
+          setShowEditModal(false)
+          setEditingQuiz(null)
+          setEditTitle('')
+          setEditDescription('')
+        }}
+      >
         <Modal.Header closeButton>
           <Modal.Title>Edit Quiz</Modal.Title>
         </Modal.Header>
         <Form onSubmit={handleUpdate}>
           <Modal.Body>
-            <Form.Group>
+            <Form.Group className="mb-3">
               <Form.Label>Quiz title</Form.Label>
               <Form.Control
                 type="text"
@@ -166,6 +192,16 @@ export default function ManageQuizzes() {
                 onChange={(e) => setEditTitle(e.target.value)}
                 placeholder="Quiz title"
                 required
+              />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Description</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                value={editDescription}
+                onChange={(e) => setEditDescription(e.target.value)}
+                placeholder="Mô tả ngắn về quiz (tùy chọn)"
               />
             </Form.Group>
           </Modal.Body>
@@ -188,6 +224,7 @@ export default function ManageQuizzes() {
             <thead>
               <tr>
                 <th>Title</th>
+                <th>Description</th>
                 <th>Questions</th>
                 <th className="text-end">Actions</th>
               </tr>
@@ -195,7 +232,7 @@ export default function ManageQuizzes() {
             <tbody>
               {quizzes.length === 0 ? (
                 <tr>
-                  <td colSpan={3} className="text-muted text-center py-4">
+                  <td colSpan={4} className="text-muted text-center py-4">
                     No quizzes yet. Create one to get started.
                   </td>
                 </tr>
@@ -203,6 +240,15 @@ export default function ManageQuizzes() {
                 quizzes.map((quiz) => (
                   <tr key={quiz._id}>
                     <td>{quiz.title || 'Untitled Quiz'}</td>
+                    <td className="text-muted small" style={{ maxWidth: 240 }}>
+                      {quiz.description ? (
+                        <span title={quiz.description}>
+                          {quiz.description.length > 60 ? `${quiz.description.slice(0, 60)}…` : quiz.description}
+                        </span>
+                      ) : (
+                        '—'
+                      )}
+                    </td>
                     <td>{quiz.questions?.length ?? 0}</td>
                     <td className="text-end">
                       <Link

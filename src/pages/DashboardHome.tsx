@@ -71,7 +71,10 @@ export default function DashboardHome() {
             <Card className="h-100 shadow-sm">
               <Card.Body>
                 <Card.Title className="h5">{quiz.title || 'Untitled Quiz'}</Card.Title>
-                <Card.Text className="text-muted small">
+                {quiz.description && (
+                  <Card.Text className="text-muted small mb-2">{quiz.description}</Card.Text>
+                )}
+                <Card.Text className="text-muted small mb-0">
                   {quiz.questions?.length ?? 0} question(s)
                 </Card.Text>
                 <Link
