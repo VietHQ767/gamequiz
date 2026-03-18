@@ -1,8 +1,11 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import type { Question } from '@/types'
+import type { Question, Quiz } from '@/types'
 import { questionsApi } from '@/api/questions'
+import { quizzesApi } from '@/api/quizzes'
 
 type QuizState = {
+  /** Current quiz (when loaded by id); used for title and to derive questions. */
+  currentQuiz: Quiz | null
   questions: Question[]
   currentIndex: number
   selectedAnswers: Record<number, number>
@@ -12,6 +15,7 @@ type QuizState = {
 }
 
 const initialState: QuizState = {
+  currentQuiz: null,
   questions: [],
   currentIndex: 0,
   selectedAnswers: {},
@@ -32,6 +36,19 @@ export const fetchQuestions = createAsyncThunk(
   }
 )
 
+/** Load one quiz by id; its questions are used for the run. */
+export const fetchQuizById = createAsyncThunk(
+  'quiz/fetchQuizById',
+  async (quizId: string, { rejectWithValue }) => {
+    try {
+      return await quizzesApi.getById(quizId)
+    } catch (e: unknown) {
+      const err = e as { response?: { data?: { message?: string } } }
+      return rejectWithValue(err.response?.data?.message || 'Failed to load quiz')
+    }
+  }
+)
+
 const quizSlice = createSlice({
   name: 'quiz',
   initialState,
@@ -47,6 +64,13 @@ const quizSlice = createSlice({
       state.score = correct
     },
     restartQuiz: (state) => {
+      state.currentIndex = 0
+      state.selectedAnswers = {}
+      state.score = null
+    },
+    clearCurrentQuiz: (state) => {
+      state.currentQuiz = null
+      state.questions = []
       state.currentIndex = 0
       state.selectedAnswers = {}
       state.score = null
@@ -76,9 +100,26 @@ const quizSlice = createSlice({
         state.isLoading = false
         state.error = (action.payload as string) || 'Failed to load questions'
       })
+      .addCase(fetchQuizById.pending, (state) => {
+        state.isLoading = true
+        state.error = null
+      })
+      .addCase(fetchQuizById.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.currentQuiz = action.payload
+        state.questions = action.payload.questions ?? []
+        state.currentIndex = 0
+        state.selectedAnswers = {}
+        state.score = null
+        state.error = null
+      })
+      .addCase(fetchQuizById.rejected, (state, action) => {
+        state.isLoading = false
+        state.error = (action.payload as string) || 'Failed to load quiz'
+      })
   },
 })
 
-export const { selectAnswer, submitQuiz, restartQuiz, nextQuestion, setCurrentIndex } =
+export const { selectAnswer, submitQuiz, restartQuiz, nextQuestion, setCurrentIndex, clearCurrentQuiz } =
   quizSlice.actions
 export default quizSlice.reducer

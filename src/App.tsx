@@ -51,6 +51,7 @@ export default function App() {
         <Route index element={<DashboardHome />} />
         <Route path="quiz" element={<QuizPage />} />
         <Route path="quiz/completed" element={<QuizCompleted />} />
+        <Route path="quiz/:quizId" element={<QuizPage />} />
         <Route path="article" element={<Article />} />
       </Route>
       <Route
