@@ -20,7 +20,19 @@ export default function ManageQuizzes() {
     setError(null)
     try {
       const data = await quizzesApi.getAll()
-      setQuizzes(Array.isArray(data) ? data : [])
+      const list = Array.isArray(data) ? data : []
+      // Backend GET /quizzes may not include questions; fetch each quiz to get question count
+      const withCounts = await Promise.all(
+        list.map(async (quiz) => {
+          try {
+            const full = await quizzesApi.getById(quiz._id)
+            return { ...quiz, questions: full.questions ?? [] }
+          } catch {
+            return { ...quiz, questions: [] }
+          }
+        })
+      )
+      setQuizzes(withCounts)
     } catch (e: unknown) {
       const err = e as { response?: { data?: { message?: string } } }
       setError(err.response?.data?.message || 'Failed to load quizzes')

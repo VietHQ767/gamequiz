@@ -6,8 +6,8 @@ import type { QuestionBE } from '@/types'
 function toFE(q: QuestionBE): Question {
   return {
     _id: q._id,
-    questionText: q.text,
-    options: q.options ?? [],
+    questionText: typeof q.text === 'string' ? q.text : String(q.text ?? ''),
+    options: Array.isArray(q.options) ? q.options.map((o) => String(o ?? '')) : [],
     correctAnswerIndex: q.correctAnswerIndex ?? 0,
     ...(q.quizId != null && { quizId: q.quizId }),
   }

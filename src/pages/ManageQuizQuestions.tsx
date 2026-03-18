@@ -22,12 +22,15 @@ export default function ManageQuizQuestions() {
     setLoading(true)
     setError(null)
     try {
-      const [quiz, qList] = await Promise.all([
-        quizzesApi.getById(quizId),
-        questionsApi.getByQuizId(quizId),
-      ])
+      // Luôn dùng GET /quizzes/:id làm nguồn chính — chỉ hiển thị questions của đúng quiz
+      const quiz = await quizzesApi.getById(quizId)
       setQuizTitle(quiz.title ?? 'Untitled Quiz')
-      setQuestions(qList)
+      let list = quiz.questions ?? []
+      if (list.length === 0) {
+        const fromApi = await questionsApi.getByQuizId(quizId)
+        list = fromApi.filter((q) => !q.quizId || q.quizId === quizId)
+      }
+      setQuestions(list)
     } catch (e: unknown) {
       const err = e as { response?: { data?: { message?: string } } }
       setError(err.response?.data?.message || 'Failed to load quiz or questions')
@@ -198,10 +201,12 @@ export default function ManageQuizQuestions() {
               </Card.Body>
             </Card>
           ) : (
-            questions.map((q) => (
+            questions.map((q, index) => (
               <Card key={q._id} className="shadow-sm">
                 <Card.Body>
-                  <Card.Title className="h6">{q.questionText}</Card.Title>
+                  <Card.Title className="h6">
+                    {q.questionText?.trim() || `Question ${index + 1}`}
+                  </Card.Title>
                   <ListGroup variant="flush" className="mb-3">
                     {q.options.map((opt, i) => (
                       <ListGroup.Item key={i}>{opt}</ListGroup.Item>

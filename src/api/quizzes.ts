@@ -7,9 +7,10 @@ function toFEQuestion(q: QuestionBE | Question): Question {
   const be = q as QuestionBE
   return {
     _id: be._id,
-    questionText: be.text ?? '',
-    options: be.options ?? [],
+    questionText: typeof be.text === 'string' ? be.text : String(be.text ?? ''),
+    options: Array.isArray(be.options) ? be.options.map((o) => String(o ?? '')) : [],
     correctAnswerIndex: be.correctAnswerIndex ?? 0,
+    ...(be.quizId != null && { quizId: be.quizId }),
   }
 }
 
