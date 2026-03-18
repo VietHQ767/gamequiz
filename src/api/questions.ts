@@ -1,4 +1,5 @@
 import { api } from './client'
+import { quizzesApi } from './quizzes'
 import type { Question } from '@/types'
 import type { QuestionBE } from '@/types'
 
@@ -24,7 +25,6 @@ export const questionsApi = {
       const { data } = await api.get<QuestionBE[]>(`/questions?quizId=${encodeURIComponent(quizId)}`)
       return Array.isArray(data) ? data.map(toFE) : []
     } catch {
-      const { quizzesApi } = await import('@/api/quizzes')
       const quiz = await quizzesApi.getById(quizId)
       return quiz.questions ?? []
     }
