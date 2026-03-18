@@ -42,18 +42,19 @@ export default function DashboardHome() {
   if (error && quizzes.length === 0) {
     return (
       <div>
-        <Alert variant="warning" className="mb-4">
-          {error}. You can still try the general quiz below.
+        <Alert variant="warning">
+          {error}
         </Alert>
-        <Card className="shadow-sm" style={{ maxWidth: 320 }}>
-          <Card.Body>
-            <Card.Title className="h5">General Quiz</Card.Title>
-            <Card.Text className="text-muted small">All questions in one quiz.</Card.Text>
-            <Link to="/dashboard/quiz" className="btn btn-primary">
-              Take Quiz
-            </Link>
-          </Card.Body>
-        </Card>
+        <p className="text-muted">No quizzes available. Try again later.</p>
+      </div>
+    )
+  }
+
+  if (quizzes.length === 0) {
+    return (
+      <div>
+        <h1 className="h2 mb-4">Quizzes</h1>
+        <p className="text-muted">No quizzes available yet. Check back later.</p>
       </div>
     )
   }
@@ -62,43 +63,27 @@ export default function DashboardHome() {
     <div>
       <h1 className="h2 mb-4">Quizzes</h1>
       <p className="text-muted mb-4">
-        Choose a quiz below. Each quiz has multiple questions.
+        Each quiz has its own questions. Choose a quiz to start.
       </p>
       <Row xs={1} md={2} lg={3} className="g-4">
-        {quizzes.length > 0 ? (
-          quizzes.map((quiz) => (
-            <Col key={quiz._id}>
-              <Card className="h-100 shadow-sm">
-                <Card.Body>
-                  <Card.Title className="h5">{quiz.title || 'Untitled Quiz'}</Card.Title>
-                  <Card.Text className="text-muted small">
-                    {quiz.questions?.length ?? 0} question(s)
-                  </Card.Text>
-                  <Link
-                    to={`/dashboard/quiz/${quiz._id}`}
-                    className="btn btn-primary"
-                  >
-                    Start Quiz
-                  </Link>
-                </Card.Body>
-              </Card>
-            </Col>
-          ))
-        ) : (
-          <Col>
+        {quizzes.map((quiz) => (
+          <Col key={quiz._id}>
             <Card className="h-100 shadow-sm">
               <Card.Body>
-                <Card.Title className="h5">General Quiz</Card.Title>
+                <Card.Title className="h5">{quiz.title || 'Untitled Quiz'}</Card.Title>
                 <Card.Text className="text-muted small">
-                  All questions in one quiz.
+                  {quiz.questions?.length ?? 0} question(s)
                 </Card.Text>
-                <Link to="/dashboard/quiz" className="btn btn-primary">
-                  Take Quiz
+                <Link
+                  to={`/dashboard/quiz/${quiz._id}`}
+                  className="btn btn-primary"
+                >
+                  Start Quiz
                 </Link>
               </Card.Body>
             </Card>
           </Col>
-        )}
+        ))}
       </Row>
     </div>
   )

@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { Button, Card } from 'react-bootstrap'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
-import { restartQuiz, fetchQuestions, fetchQuizById, clearCurrentQuiz } from '@/store/quizSlice'
+import { restartQuiz, fetchQuizById, clearCurrentQuiz } from '@/store/quizSlice'
 
 export default function QuizCompleted() {
   const { score, questions, currentQuiz } = useAppSelector((s) => s.quiz)
@@ -21,8 +21,7 @@ export default function QuizCompleted() {
       dispatch(fetchQuizById(quizId))
       navigate(`/dashboard/quiz/${quizId}`, { replace: true })
     } else {
-      dispatch(fetchQuestions())
-      navigate('/dashboard/quiz', { replace: true })
+      navigate('/dashboard', { replace: true })
     }
   }
 

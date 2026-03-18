@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Form, Button, Card, Alert, ProgressBar } from 'react-bootstrap'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
-import { fetchQuizById, fetchQuestions, selectAnswer, submitQuiz, nextQuestion } from '@/store/quizSlice'
+import { fetchQuizById, selectAnswer, submitQuiz, nextQuestion } from '@/store/quizSlice'
 
 export default function QuizPage() {
   const { quizId } = useParams<{ quizId: string }>()
@@ -12,12 +12,12 @@ export default function QuizPage() {
     useAppSelector((s) => s.quiz)
 
   useEffect(() => {
-    if (quizId) {
-      dispatch(fetchQuizById(quizId))
-    } else {
-      dispatch(fetchQuestions())
+    if (!quizId) {
+      navigate('/dashboard', { replace: true })
+      return
     }
-  }, [dispatch, quizId])
+    dispatch(fetchQuizById(quizId))
+  }, [dispatch, quizId, navigate])
 
   useEffect(() => {
     if (score !== null) navigate('/dashboard/quiz/completed', { replace: true })

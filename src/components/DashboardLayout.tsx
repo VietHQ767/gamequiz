@@ -31,8 +31,8 @@ export default function DashboardLayout() {
             <Nav.Link as={Link} to="/dashboard">
               Home
             </Nav.Link>
-            <Nav.Link as={Link} to="/dashboard/quiz">
-              Quiz
+            <Nav.Link as={Link} to="/dashboard">
+              Quizzes
             </Nav.Link>
             <Nav.Link as={Link} to="/dashboard/article">
               Article
