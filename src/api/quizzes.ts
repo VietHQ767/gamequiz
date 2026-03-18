@@ -27,4 +27,13 @@ export const quizzesApi = {
     api.get<Quiz[]>('/quizzes').then((r) => (Array.isArray(r.data) ? r.data.map(normalizeQuiz) : [])),
   getById: (id: string) =>
     api.get(`/quizzes/${id}`).then((r) => normalizeQuiz(r.data as Parameters<typeof normalizeQuiz>[0])),
+  create: (body: { title: string }) =>
+    api
+      .post<Parameters<typeof normalizeQuiz>[0]>('/quizzes', body)
+      .then((r) => normalizeQuiz(r.data)),
+  update: (id: string, body: { title?: string }) =>
+    api
+      .put<Parameters<typeof normalizeQuiz>[0]>(`/quizzes/${id}`, body)
+      .then((r) => normalizeQuiz(r.data)),
+  delete: (id: string) => api.delete(`/quizzes/${id}`),
 }

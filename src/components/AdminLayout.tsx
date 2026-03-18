@@ -31,8 +31,8 @@ export default function AdminLayout() {
             <Nav.Link as={Link} to="/admin">
               Home
             </Nav.Link>
-            <Nav.Link as={Link} to="/admin/questions">
-              Manage Questions
+            <Nav.Link as={Link} to="/admin/quizzes">
+              Manage Quizzes
             </Nav.Link>
             <Nav.Link as={Link} to="/admin/articles">
               Manage Articles

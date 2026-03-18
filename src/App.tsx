@@ -10,7 +10,8 @@ import QuizPage from '@/pages/QuizPage'
 import QuizCompleted from '@/pages/QuizCompleted'
 import Article from '@/pages/Article'
 import AdminHome from '@/pages/AdminHome'
-import ManageQuestions from '@/pages/ManageQuestions'
+import ManageQuizzes from '@/pages/ManageQuizzes'
+import ManageQuizQuestions from '@/pages/ManageQuizQuestions'
 import ManageArticles from '@/pages/ManageArticles'
 
 function PublicOnly({ children }: { children: React.ReactNode }) {
@@ -63,7 +64,8 @@ export default function App() {
         }
       >
         <Route index element={<AdminHome />} />
-        <Route path="questions" element={<ManageQuestions />} />
+        <Route path="quizzes" element={<ManageQuizzes />} />
+        <Route path="quizzes/:quizId/questions" element={<ManageQuizQuestions />} />
         <Route path="articles" element={<ManageArticles />} />
       </Route>
       <Route path="/" element={<Navigate to="/login" replace />} />

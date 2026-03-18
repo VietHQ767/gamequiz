@@ -8,6 +8,7 @@ function toFE(q: QuestionBE): Question {
     questionText: q.text,
     options: q.options ?? [],
     correctAnswerIndex: q.correctAnswerIndex ?? 0,
+    ...(q.quizId != null && { quizId: q.quizId }),
   }
 }
 
@@ -17,16 +18,28 @@ export const questionsApi = {
     const { data } = await api.get<QuestionBE[]>('/questions')
     return Array.isArray(data) ? data.map(toFE) : []
   },
+  /** Get questions for one quiz. Uses GET /questions?quizId= if available, else fetches quiz and returns its questions. */
+  getByQuizId: async (quizId: string): Promise<Question[]> => {
+    try {
+      const { data } = await api.get<QuestionBE[]>(`/questions?quizId=${encodeURIComponent(quizId)}`)
+      return Array.isArray(data) ? data.map(toFE) : []
+    } catch {
+      const { quizzesApi } = await import('@/api/quizzes')
+      const quiz = await quizzesApi.getById(quizId)
+      return quiz.questions ?? []
+    }
+  },
   getById: async (id: string): Promise<Question> => {
     const { data } = await api.get<QuestionBE>(`/questions/${id}`)
     return toFE(data)
   },
-  create: (body: Omit<Question, '_id'>) =>
+  create: (body: Omit<Question, '_id'> & { quizId?: string }) =>
     api
       .post<QuestionBE>('/questions', {
         text: body.questionText,
         options: body.options,
         correctAnswerIndex: body.correctAnswerIndex,
+        ...(body.quizId != null && { quizId: body.quizId }),
       })
       .then((r) => toFE(r.data)),
   update: (id: string, body: Partial<Omit<Question, '_id'>>) =>

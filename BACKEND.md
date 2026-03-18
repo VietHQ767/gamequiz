@@ -19,9 +19,15 @@
 | POST | `/api/login` | Body: `{ username, password }` → `{ user, token }` |
 | POST | `/api/signup` | Body: `{ username, password }` → `{ user, token }` |
 | POST | `/api/logout` | Header: `Authorization: Bearer <token>` (invalidate token) |
+| GET | `/api/quizzes` | Trả về mảng quizzes (mỗi item: `_id`, `title?`, `questions?`) |
+| GET | `/api/quizzes/:id` | Chi tiết một quiz (kèm `questions` là mảng question) |
+| POST | `/api/quizzes` | Body: `{ title }` → tạo quiz mới (Admin) |
+| PUT | `/api/quizzes/:id` | Body: `{ title? }` → cập nhật quiz (Admin) |
+| DELETE | `/api/quizzes/:id` | Xóa quiz (Admin) |
 | GET | `/api/questions` | Trả về mảng questions (field `text` cho nội dung câu hỏi) |
+| GET | `/api/questions?quizId=xxx` | (Tùy chọn) Trả về questions thuộc quiz đó. Nếu không có, FE dùng GET `/api/quizzes/:id` để lấy questions. |
 | GET | `/api/questions/:id` | Chi tiết một question |
-| POST | `/api/questions` | Body: `{ text, options, correctAnswerIndex }` (Author do BE gán từ req.user) |
+| POST | `/api/questions` | Body: `{ text, options, correctAnswerIndex, quizId? }` (Author do BE gán từ req.user; quizId để gán question vào quiz) |
 | PUT | `/api/questions/:id` | Body: `{ text?, options?, correctAnswerIndex? }` |
 | DELETE | `/api/questions/:id` | Xóa question |
 

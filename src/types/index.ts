@@ -12,6 +12,8 @@ export interface Question {
   questionText: string
   options: string[]
   correctAnswerIndex: number
+  /** Set when question belongs to a quiz (admin create flow). */
+  quizId?: string
 }
 
 export interface Quiz {
@@ -36,4 +38,5 @@ export interface QuestionBE {
   options: string[]
   correctAnswerIndex: number
   Author?: string
+  quizId?: string
 }
