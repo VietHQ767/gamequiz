@@ -37,4 +37,7 @@ export const quizzesApi = {
       .put<Parameters<typeof normalizeQuiz>[0]>(`/quizzes/${id}`, body)
       .then((r) => normalizeQuiz(r.data)),
   delete: (id: string) => api.delete(`/quizzes/${id}`),
+  /** Gắn câu hỏi vào quiz: POST /quizzes/:quizId/question với body { questionId }. */
+  addQuestionToQuiz: (quizId: string, questionId: string) =>
+    api.post(`/quizzes/${quizId}/question`, { questionId }),
 }

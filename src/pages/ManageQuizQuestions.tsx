@@ -22,15 +22,10 @@ export default function ManageQuizQuestions() {
     setLoading(true)
     setError(null)
     try {
-      // Luôn dùng GET /quizzes/:id làm nguồn chính — chỉ hiển thị questions của đúng quiz
+      // Chỉ dùng GET /quizzes/:id (hoặc /populate) — không gọi GET /questions, tránh lẫn câu giữa các quiz
       const quiz = await quizzesApi.getById(quizId)
       setQuizTitle(quiz.title ?? 'Untitled Quiz')
-      let list = quiz.questions ?? []
-      if (list.length === 0) {
-        const fromApi = await questionsApi.getByQuizId(quizId)
-        list = fromApi.filter((q) => !q.quizId || q.quizId === quizId)
-      }
-      setQuestions(list)
+      setQuestions(quiz.questions ?? [])
     } catch (e: unknown) {
       const err = e as { response?: { data?: { message?: string } } }
       setError(err.response?.data?.message || 'Failed to load quiz or questions')
@@ -93,12 +88,12 @@ export default function ManageQuizQuestions() {
           correctAnswerIndex,
         })
       } else {
-        await questionsApi.create({
+        const created = await questionsApi.create({
           questionText: questionText.trim(),
           options: opts,
           correctAnswerIndex,
-          quizId,
         })
+        await quizzesApi.addQuestionToQuiz(quizId, created._id)
       }
       resetForm()
       await loadQuizAndQuestions()

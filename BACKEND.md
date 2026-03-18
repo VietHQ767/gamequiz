@@ -20,7 +20,9 @@
 | POST | `/api/signup` | Body: `{ username, password }` → `{ user, token }` |
 | POST | `/api/logout` | Header: `Authorization: Bearer <token>` (invalidate token) |
 | GET | `/api/quizzes` | Trả về mảng quizzes (mỗi item: `_id`, `title?`, `questions?`) |
-| GET | `/api/quizzes/:id` | Chi tiết một quiz (kèm `questions` là mảng question) |
+| GET | `/api/quizzes/:id` | Chi tiết một quiz (kèm `questions` là mảng question). Dùng cho trang "Questions: [quiz]". |
+| GET | `/api/quizzes/:quizId/populate` | (Tùy chọn) Cùng dữ liệu có populate questions. |
+| POST | `/api/quizzes/:quizId/question` | Body: `{ "questionId": "<id>" }` → gắn câu hỏi vào quiz (gọi sau POST /questions). |
 | POST | `/api/quizzes` | Body: `{ title }` → tạo quiz mới (Admin) |
 | PUT | `/api/quizzes/:id` | Body: `{ title? }` → cập nhật quiz (Admin) |
 | DELETE | `/api/quizzes/:id` | Xóa quiz (Admin) |
